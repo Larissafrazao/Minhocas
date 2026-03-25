@@ -9,7 +9,7 @@ class Menu:
     def __init__(self, window):
         self.window = window
         # 1. Carrega a imagem original
-        self.surf = pygame.image.load("asset/1_game_background.png").convert()
+        self.surf = pygame.image.load("asset/1_game_background.png").convert_alpha()
 
         # 2. Pega as dimensões da SUA janela
         largura_janela = self.window.get_width()

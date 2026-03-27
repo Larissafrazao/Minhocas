@@ -7,7 +7,7 @@ from pygame import font, Surface, Rect, Font
 from code. Entity import Entity
 import pygame
 from code.EntityFactory import EntityFactory
-from code.const import COLOR_BLACK, WIN_HEIGHT
+from code.const import COLOR_BLACK, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY
 
 
 class Level:
@@ -17,7 +17,11 @@ class Level:
         self.game_mode = game_mode
         self.entity_list : list[Entity] = []
         self.entity_list.extend(EntityFactory.get_entity('Level1Bg'))
+        self.entity_list.append(EntityFactory.get_entity('Player1'))
+        if game_mode in [MENU_OPTION[1], MENU_OPTION[2]]:
+            self.entity_list.append(EntityFactory.get_entity('Player2'))
         self.timeout = 20000
+        pygame.time.set_timer(EVENT_ENEMY, 5000)
 
 
     def run(self, ):
@@ -33,6 +37,8 @@ class Level:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == EVENT_ENEMY:
+                    self.entity_list.append(EntityFactory.get_entity('Enemy1'))
 
             #printed text
             self.level_text(14, f'{self.name} - Timeout: {self.timeout/ 1000 : .1f}s', COLOR_BLACK, (10,5))

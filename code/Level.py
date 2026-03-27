@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import random
 import sys
 
 from pygame import font, Surface, Rect, Font
@@ -7,7 +8,7 @@ from pygame import font, Surface, Rect, Font
 from code. Entity import Entity
 import pygame
 from code.EntityFactory import EntityFactory
-from code.const import COLOR_BLACK, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY
+from code.const import COLOR_BLACK, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME
 
 
 class Level:
@@ -21,7 +22,7 @@ class Level:
         if game_mode in [MENU_OPTION[1], MENU_OPTION[2]]:
             self.entity_list.append(EntityFactory.get_entity('Player2'))
         self.timeout = 20000
-        pygame.time.set_timer(EVENT_ENEMY, 5000)
+        pygame.time.set_timer(EVENT_ENEMY, SPAWN_TIME)
 
 
     def run(self, ):
@@ -38,7 +39,8 @@ class Level:
                     pygame.quit()
                     sys.exit()
                 if event.type == EVENT_ENEMY:
-                    self.entity_list.append(EntityFactory.get_entity('Enemy1'))
+                    choice = random.choice(('Enemy1', 'Enemy2','Enemy3','Enemy4'))
+                    self.entity_list.append(EntityFactory.get_entity(choice ))
 
             #printed text
             self.level_text(14, f'{self.name} - Timeout: {self.timeout/ 1000 : .1f}s', COLOR_BLACK, (10,5))

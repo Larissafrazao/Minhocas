@@ -15,10 +15,10 @@ ENTITY_SPEED ={
     'Level1Bg5': 5,
     'Player1': 3,
     'Player2': 3,
-    'Enemy1': -3,
-    'Enemy2': -3,
-    'Enemy3': -3,
-    'Enemy4': -3,
+    'Enemy1': -5,
+    'Enemy2': -7,
+    'Enemy3': -8,
+    'Enemy4': -6,
 
 }
 # M
@@ -38,6 +38,8 @@ PLAYER_KEY_LEFT = {'Player1': pygame.K_LEFT,
 PLAYER_KEY_RIGHT = {'Player1': pygame.K_RIGHT,
                     'Player2': pygame.K_d}
 
+#S
+SPAWN_TIME = 5000
 
 # W
 WIN_WIDTH = 800

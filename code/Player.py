@@ -13,6 +13,8 @@ class Player(Entity):
         novo_tamanho=(120,80)
         self.surf= pygame.transform.scale(self.surf, novo_tamanho)
         self.rect = self.surf.get_rect(left=position[0], top=position[1])
+        self.health = 3  # Começa com 3 vidas
+        self.last_hit = 0  # Guarda o tempo do último dano
 
     def update(self, ):
         pass

@@ -6,7 +6,6 @@ import pygame
 from pygame import Surface, Rect, Font
 from code.Entity import Entity
 from code.EntityFactory import EntityFactory
-# Certifique-se de importar WIN_WIDTH para o nascimento dos inimigos
 from code.const import COLOR_BLACK, WIN_HEIGHT, WIN_WIDTH, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME, COLOR_LIGHT_BLUE
 from code.Player import Player
 from code.Enemy import Enemy
@@ -18,21 +17,33 @@ class Level:
         self.name = name
         self.game_mode = game_mode
         self.entity_list: list[Entity] = []
-        self.entity_list.extend(EntityFactory.get_entity('Level1Bg'))
+
+        if name == 'Fase 2':
+            # Carrega o cenário da fase 2 e talvez inimigos mais rápidos
+            self.entity_list.extend(EntityFactory.get_entity('Level2Bg'))
+            self.timeout = 20000  # Fase 2 mais curta
+            self.spawn_delay = 2000  # Inimigos aparecem mais rápido
+        else:
+            # Fase 1
+            self.entity_list.extend(EntityFactory.get_entity('Level1Bg'))
+            self.timeout = 30000
+            self.spawn_delay = 4000
+
         self.entity_list.append(EntityFactory.get_entity('Player1'))
         if game_mode in [MENU_OPTION[1], MENU_OPTION[2]]:
             self.entity_list.append(EntityFactory.get_entity('Player2'))
 
-        # Timeout agora funciona como sua "pontuação/vida"
-        self.timeout = 20000
         self.score = 0
-        pygame.time.set_timer(EVENT_ENEMY, SPAWN_TIME)
+        pygame.time.set_timer(EVENT_ENEMY, self.spawn_delay)
 
     def run(self):
-        pygame.mixer_music.load('./asset/Trilha Sonora.wav')
+        if self.name == 'Fase 2':
+            pygame.mixer_music.load('./asset/Trilha_Fase2.mp3')
+        else:
+            pygame.mixer_music.load('./asset/Trilha Sonora.wav')
         pygame.mixer_music.play(-1)
-        clock = pygame.time.Clock()
 
+        clock = pygame.time.Clock()
         player_lives = 3
         invisibility_timer = 0
 
@@ -41,7 +52,7 @@ class Level:
             current_time = pygame.time.get_ticks()
             self.timeout -= dt
             self.score += 1
-            self.window.fill(COLOR_LIGHT_BLUE)  # Usa a constante nova
+            self.window.fill(COLOR_LIGHT_BLUE)
 
 
             # 1. MOVIMENTAÇÃO E DESENHO
@@ -51,9 +62,8 @@ class Level:
                         continue
                 self.window.blit(source=ent.surf, dest=ent.rect)
                 ent.move()
+                # No final do seu while True no Level.py:
 
-            # 2. LÓGICA DE COLISÃO (O que você queria adicionar)
-            # Vamos pegar os jogadores e inimigos da lista
             players = [ent for ent in self.entity_list if isinstance(ent, Player)]
             enemies = [ent for ent in self.entity_list if isinstance(ent, Enemy)]
 
@@ -68,13 +78,9 @@ class Level:
                                 self.window.fill((255, 0, 0))
                                 if e in self.entity_list:
                                     self.entity_list.remove(e)
-                                print(f"Alerta! Vidas restantes: {player_lives}")
                             else:
-                                # TERCEIRA VEZ: Jogador desaparece e perde
-                                if p in self.entity_list:
-                                    self.entity_list.remove(p)
-                                print("Game Over: A tartaruga sumiu!")
-                                return
+                                return "GAME_OVER"  # Retorno para o Game.py
+
 
 
             # 3. TRATAMENTO DE EVENTOS
@@ -89,8 +95,6 @@ class Level:
                     # CORREÇÃO: Faz nascer em altura aleatória e na borda direita
                     y_pos = random.randint(0, WIN_HEIGHT - 80)
                     novo_inimigo.rect.topleft = (WIN_WIDTH, y_pos)
-
-
                     self.entity_list.append(novo_inimigo)
 
             # 4. LIMPEZA E UI
@@ -107,7 +111,7 @@ class Level:
 
             # Se o tempo acabar, Game Over
             if self.timeout <= 0:
-                return  # Encerra o level
+                return "NEXT_LEVEL"
 
             pygame.display.flip()
 

@@ -18,15 +18,24 @@ class Game:
             menu = Menu(self.window)
             menu_return = menu.run()
 
-            if menu_return in [MENU_OPTION[0],MENU_OPTION[1], MENU_OPTION[2]]:
-                level = Level(self.window, 'Level1Bg',menu_return)
-                level_return = level.run()
+            # 1. Verifica se o usuário escolheu jogar (1P, 2P Co-op ou 2P Comp)
+            if menu_return in [MENU_OPTION[0], MENU_OPTION[1], MENU_OPTION[2]]:
+                fases = ['Fase 1', 'Fase 2']
+                fase_atual = 0
 
+                while fase_atual < len(fases):
+                    # Criamos a fase atual baseada na lista
+                    level = Level(self.window, fases[fase_atual], menu_return)
+
+                    # Rodamos a fase e guardamos o retorno (NEXT_LEVEL ou GAME_OVER)
+                    status = level.run()
+
+                    if status == "NEXT_LEVEL":
+                        fase_atual += 1  # Vai para a próxima fase da lista
+                    else:
+                        break  # Se perdeu ou saiu, volta para o Menu principal
+
+            # 2. Verifica se o usuário escolheu sair
             elif menu_return == MENU_OPTION[4]:
-                pygame.quit() # Close Window
-                quit() # And pygame
-            else:
-                pass
-
-
-
+                pygame.quit()
+                quit()

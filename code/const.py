@@ -3,6 +3,8 @@ import pygame
 
 COLOR_BLACK=(0,0,0)
 COLOR_WHITE =(255,255,255)
+COLOR_LIGHT_BLUE = (115, 195, 222)
+
 
 #E
 EVENT_ENEMY = pygame.USEREVENT + 1
@@ -26,7 +28,7 @@ MENU_OPTION = ('NEW GAME 1P',
                'NEW GAME 2P - COOPERATIVE ',
                'NEW GAME 2P - COMPETITIVE ',
                'SCORE',
-               'EXITE')
+               'EXIT')
 
 #P
 PLAYER_KEY_UP = {'Player1': pygame.K_UP,

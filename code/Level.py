@@ -7,7 +7,7 @@ from pygame import Surface, Rect, Font
 from code.Entity import Entity
 from code.EntityFactory import EntityFactory
 # Certifique-se de importar WIN_WIDTH para o nascimento dos inimigos
-from code.const import COLOR_BLACK, WIN_HEIGHT, WIN_WIDTH, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME
+from code.const import COLOR_BLACK, WIN_HEIGHT, WIN_WIDTH, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME, COLOR_LIGHT_BLUE
 from code.Player import Player
 from code.Enemy import Enemy
 
@@ -25,6 +25,7 @@ class Level:
 
         # Timeout agora funciona como sua "pontuação/vida"
         self.timeout = 20000
+        self.score = 0
         pygame.time.set_timer(EVENT_ENEMY, SPAWN_TIME)
 
     def run(self):
@@ -36,8 +37,12 @@ class Level:
         invisibility_timer = 0
 
         while True:
-            clock.tick(60)
+            dt= clock.tick(60)
             current_time = pygame.time.get_ticks()
+            self.timeout -= dt
+            self.score += 1
+            self.window.fill(COLOR_LIGHT_BLUE)  # Usa a constante nova
+
 
             # 1. MOVIMENTAÇÃO E DESENHO
             for ent in self.entity_list:
@@ -85,6 +90,7 @@ class Level:
                     y_pos = random.randint(0, WIN_HEIGHT - 80)
                     novo_inimigo.rect.topleft = (WIN_WIDTH, y_pos)
 
+
                     self.entity_list.append(novo_inimigo)
 
             # 4. LIMPEZA E UI
@@ -92,7 +98,10 @@ class Level:
             self.entity_list = [ent for ent in self.entity_list if ent.rect.right > 0]
 
             # Texto na tela
+            # ... (dentro do while True, na parte dos textos)
             self.level_text(14, f'{self.name} - Timeout: {self.timeout / 1000 : .1f}s', COLOR_BLACK, (10, 5))
+            self.level_text(14, f'{self.name} - Life: {player_lives}', COLOR_BLACK, (10, 25))
+            self.level_text(14, f'SCORE: {self.score}', COLOR_BLACK, (WIN_WIDTH - 150, 10))
             self.level_text(14, f'fps: {clock.get_fps():.0f}', COLOR_BLACK, (10, WIN_HEIGHT - 35))
             self.level_text(14, f'entidades: {len(self.entity_list)}', COLOR_BLACK, (10, WIN_HEIGHT - 20))
 

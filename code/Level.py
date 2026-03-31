@@ -44,20 +44,19 @@ class Level:
         pygame.mixer_music.play(-1)
 
         clock = pygame.time.Clock()
-        player_lives = 3
-        invisibility_timer = 0
+        player_lives = {'Player1': 3, 'Player2': 3}
+        invisibility_timer = {'Player1': 0, 'Player2': 0}
 
         while True:
-            dt= clock.tick(60)
+            dt = clock.tick(60)
             current_time = pygame.time.get_ticks()
             self.timeout -= dt
             self.score += 1
             self.window.fill(COLOR_LIGHT_BLUE)
 
-
             # 1. MOVIMENTAÇÃO E DESENHO
             for ent in self.entity_list:
-                if isinstance(ent, Player) and current_time < invisibility_timer:
+                if isinstance(ent, Player) and current_time < invisibility_timer[ent.name]:
                     if (current_time // 100) % 2 == 0:
                         continue
                 self.window.blit(source=ent.surf, dest=ent.rect)
@@ -70,18 +69,20 @@ class Level:
             for p in players:
                 for e in enemies:
                     if p.rect.colliderect(e.rect):
-                        if current_time > invisibility_timer:
-                            player_lives -= 1
-                            invisibility_timer = current_time + 2000
-                            if player_lives > 0:
-                                # ALERTA: Flash vermelho na tela e remove o inimigo
+                        if current_time > invisibility_timer[p.name]:
+                            player_lives[p.name] -= 1
+                            invisibility_timer[p.name] = current_time + 2000
+
+                            if player_lives[p.name] > 0:
+                                # Flash vermelho e remove o inimigo
                                 self.window.fill((255, 0, 0))
                                 if e in self.entity_list:
                                     self.entity_list.remove(e)
                             else:
-                                return "GAME_OVER"  # Retorno para o Game.py
-
-
+                                # Se a vida de UM jogador acabar, remove apenas ele da tela
+                                if p in self.entity_list:
+                                    self.entity_list.remove(p)
+                                print(f"O {p.name} foi eliminado!")
 
             # 3. TRATAMENTO DE EVENTOS
             for event in pygame.event.get():
